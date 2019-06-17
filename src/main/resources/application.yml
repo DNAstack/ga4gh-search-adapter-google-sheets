@@ -1,0 +1,28 @@
+# This file should establish defaults that work out-of-the-box on developer machines.
+# Everything here can be overridden in staging and production deployments using environment variables.
+# Details at https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-external-config.html
+
+server:
+  port: 8087
+
+ga4gh:
+  service-info:
+    title: "GA4GH Search Wrapper: Google Sheets"
+    description: GA4GH Search/Dataset implementation backed by Google Sheets
+
+sheets:
+  auth:
+    client-id: 217706947495-1cneo4b771r1365tsome1j0ok4gh8agg.apps.googleusercontent.com
+    client-secret: get-this-from-gcloud-console
+    scopes: https://www.googleapis.com/auth/spreadsheets.readonly
+
+spring:
+  jackson:
+    default-property-inclusion: non_empty
+    property-naming-strategy: SNAKE_CASE
+logging:
+  level:
+    com:
+      dnastack:
+        search:
+          sheets: DEBUG

@@ -1,0 +1,151 @@
+package com.dnastack.search.sheets.client;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.api.services.sheets.v4.model.CellData;
+import lombok.extern.slf4j.Slf4j;
+import org.ga4gh.dataset.model.Dataset;
+import org.ga4gh.dataset.model.DatasetInfo;
+import org.ga4gh.dataset.model.Pagination;
+import org.ga4gh.dataset.model.Schema;
+
+import java.io.IOException;
+import java.net.URI;
+import java.util.*;
+
+import static java.util.stream.Collectors.toList;
+
+@Slf4j
+public class SheetsClient {
+
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final SheetsApiWrapper sheets;
+
+    public SheetsClient(SheetsApiWrapper sheets) {
+        this.sheets = sheets;
+    }
+
+    public List<DatasetInfo> getDatasets() {
+        return Collections.emptyList();
+    }
+
+    public Dataset getDataset(String spreadsheetId, String worksheetName) throws IOException {
+        // assume first row is the heading
+        // in future, we oughtta check how many rows are frozen and use that for the headings
+        final int headerSize = 1;
+
+        var cellDataRows = sheets.fetchWorksheet(spreadsheetId, worksheetName);
+        log.debug("Got worksheet data with {} rows and {} columns in first row",
+                cellDataRows.size(), cellDataRows.size() > 0 ? cellDataRows.get(0).size() : "undefined number of");
+
+        var stringRows = convertWorksheetToStringValues(cellDataRows);
+        stringRows = trimTrailingEmptyRowsAndColumns(stringRows);
+
+        // assemble schema
+        var headerRow = stringRows.get(0);
+        var sizeOfLongestRow = sizeOfLongestRow(stringRows);
+
+        int actualHeadingCount = 0;
+        int generatedHeadingCount = 0;
+        Map<String, Object> schemaJson = new LinkedHashMap<>();
+        for (int colNum = 0; colNum < sizeOfLongestRow; colNum++) {
+            Map<String, Object> props = new LinkedHashMap<>();
+            props.put("type", "string");
+
+            String colName = colNum < headerRow.size() ? headerRow.get(colNum) : null;
+            if (colName == null || colName.trim().length() == 0) {
+                colName = "Column " + columnLetter(colNum);
+                generatedHeadingCount++;
+            } else {
+                actualHeadingCount++;
+                colName = colName.trim();
+            }
+            schemaJson.put(colName, props);
+        }
+        log.debug("Extracted {} actual column headings and {} generated values", actualHeadingCount, generatedHeadingCount);
+        var schema = new Schema(URI.create("https://todo.example.com"), objectMapper.valueToTree(schemaJson));
+
+        // assemble row data
+        List<Object> objects = new ArrayList<>(); // TODO Dataset type is too opaque here. Should be List<Map<String, Object>>.
+        for (int i = headerSize; i < stringRows.size(); i++) {
+            List<String> row = stringRows.get(i);
+
+            Map<String, Object> rowObj = new LinkedHashMap<>();
+            Iterator<String> colNameIter = schemaJson.keySet().iterator();
+            Iterator<String> cellValueIter = row.iterator();
+            while (colNameIter.hasNext() || cellValueIter.hasNext()) {
+                String colName = colNameIter.next();
+                String cellValue = null;
+                if (cellValueIter.hasNext()) {
+                    cellValue = cellValueIter.next();
+                }
+                rowObj.put(colName, cellValue);
+            }
+            objects.add(rowObj);
+        }
+
+        // assemble dataset
+        return new Dataset(schema, objects, new Pagination(null, null));
+    }
+
+    private static List<List<String>> convertWorksheetToStringValues(List<List<CellData>> cellDataRows) {
+        return cellDataRows.stream()
+                .map(SheetsClient::convertRowToStringValues)
+                .collect(toList());
+    }
+
+    private static List<String> convertRowToStringValues(List<CellData> cellDataRow) {
+        return cellDataRow.stream()
+                .map(cellData -> cellData == null ? null : cellData.getFormattedValue())
+                .collect(toList());
+    }
+
+    private static <T> List<List<T>> trimTrailingEmptyRowsAndColumns(List<List<T>> rows) {
+        // first trim nulls off end of each row (needed for empty row detection to work properly!)
+        rows = rows.stream()
+                .map(list -> {
+                    int lastNonNull = indexOfLastNonNull(list);
+                    log.trace("Last non-null at column {}", lastNonNull);
+                    return list.subList(0, lastNonNull + 1);
+                })
+                .collect(toList());
+
+        // now find last non-empty row among the trimmed rows
+        int lastNonEmptyRow = -1;
+        for (int row = 0; row < rows.size(); row++) {
+            List<T> cells =  rows.get(row);
+            if (cells.size() > 0) {
+                lastNonEmptyRow = row;
+            }
+        }
+
+        return rows.subList(0, lastNonEmptyRow + 1);
+    }
+
+    private static <T> int indexOfLastNonNull(List<T> row) {
+        int lastNonNull = -1;
+        for (int i = 0; i < row.size(); i++) {
+            T t =  row.get(i);
+            if (t != null) {
+                lastNonNull = i;
+            }
+        }
+        return lastNonNull;
+    }
+
+    private static <T> int sizeOfLongestRow(List<List<T>> rows) {
+        return rows.stream()
+                .mapToInt(List::size)
+                .max()
+                .orElse(0);
+    }
+
+    private static String columnLetter(int colIndex) {
+        StringBuilder colLetter = new StringBuilder();
+        do {
+            int remainder = colIndex % 26;
+            colIndex /= 26;
+            colLetter.insert(0, (char) ('A' + remainder));
+        } while (colIndex > 26);
+        return colLetter.toString();
+    }
+}
