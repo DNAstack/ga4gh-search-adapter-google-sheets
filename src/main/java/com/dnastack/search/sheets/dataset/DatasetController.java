@@ -27,7 +27,7 @@ public class DatasetController {
         return new ListDatasetsResponse(datasets);
     }
 
-    @GetMapping("/datasets/{spreadsheetId}:{sheetTitle}")
+    @GetMapping("/dataset/{spreadsheetId}:{sheetTitle}")
     public Dataset get(@RequestHeader String authorization, @PathVariable String spreadsheetId, @PathVariable String sheetTitle) throws IOException {
         log.info("Fetching {} - {}", spreadsheetId, sheetTitle);
         var sheetsClient = sheetsServiceFactory.create(extractBearerToken(authorization));
