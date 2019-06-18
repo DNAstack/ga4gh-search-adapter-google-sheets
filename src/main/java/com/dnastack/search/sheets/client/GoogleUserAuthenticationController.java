@@ -19,6 +19,10 @@ import java.net.URI;
 import java.security.SecureRandom;
 import java.util.List;
 
+/**
+ * Provides the OAuth entry point and authorization code callback for obtaining user tokens for accessing
+ * Google Sheets.
+ */
 @Slf4j
 @RestController
 public class GoogleUserAuthenticationController {

@@ -15,14 +15,14 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 
 /**
- * Easy-to-mock interface that encapsulates the horrors of the Sheets API.
+ * Easy-to-mock interface that encapsulates the less-mockable Sheets API.
  */
 @Slf4j
-class SheetsApiWrapper {
+class SheetsClientWrapper {
 
     private final Sheets service;
 
-    public SheetsApiWrapper(Sheets service) {
+    public SheetsClientWrapper(Sheets service) {
         this.service = service;
     }
 

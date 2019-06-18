@@ -14,13 +14,17 @@ import java.util.*;
 
 import static java.util.stream.Collectors.toList;
 
+/**
+ * Service interface for the Google Sheets API which performs Sheets-to-Dataset conversion and data
+ * cleanup, such as trimming empty cells at the bottom and right-hand edges.
+ */
 @Slf4j
-public class SheetsClient {
+public class SheetsService {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final SheetsApiWrapper sheets;
+    private final SheetsClientWrapper sheets;
 
-    public SheetsClient(SheetsApiWrapper sheets) {
+    public SheetsService(SheetsClientWrapper sheets) {
         this.sheets = sheets;
     }
 
@@ -89,7 +93,7 @@ public class SheetsClient {
 
     private static List<List<String>> convertWorksheetToStringValues(List<List<CellData>> cellDataRows) {
         return cellDataRows.stream()
-                .map(SheetsClient::convertRowToStringValues)
+                .map(SheetsService::convertRowToStringValues)
                 .collect(toList());
     }
 

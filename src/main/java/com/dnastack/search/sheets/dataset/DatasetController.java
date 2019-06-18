@@ -1,6 +1,6 @@
 package com.dnastack.search.sheets.dataset;
 
-import com.dnastack.search.sheets.client.SheetsClientFactory;
+import com.dnastack.search.sheets.client.SheetsServiceFactory;
 import com.dnastack.search.sheets.shared.BadRequestException;
 import lombok.extern.slf4j.Slf4j;
 import org.ga4gh.dataset.model.Dataset;
@@ -18,19 +18,19 @@ import java.io.IOException;
 public class DatasetController {
 
     @Autowired
-    private SheetsClientFactory sheetsClientFactory;
+    private SheetsServiceFactory sheetsServiceFactory;
 
     @GetMapping("/datasets")
     public ListDatasetsResponse list(@RequestHeader String authorization) {
 
-        var datasets = sheetsClientFactory.createClient(extractBearerToken(authorization)).getDatasets();
+        var datasets = sheetsServiceFactory.create(extractBearerToken(authorization)).getDatasets();
         return new ListDatasetsResponse(datasets);
     }
 
     @GetMapping("/datasets/{spreadsheetId}:{sheetTitle}")
     public Dataset get(@RequestHeader String authorization, @PathVariable String spreadsheetId, @PathVariable String sheetTitle) throws IOException {
         log.info("Fetching {} - {}", spreadsheetId, sheetTitle);
-        var sheetsClient = sheetsClientFactory.createClient(extractBearerToken(authorization));
+        var sheetsClient = sheetsServiceFactory.create(extractBearerToken(authorization));
         return sheetsClient.getDataset(spreadsheetId, sheetTitle);
     }
 

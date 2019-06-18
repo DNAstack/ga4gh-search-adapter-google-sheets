@@ -19,13 +19,13 @@ import static java.util.stream.Collectors.toList;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SheetsClientTest {
+public class SheetsServiceTest {
 
     @Mock
-    SheetsApiWrapper sheetsBackend;
+    SheetsClientWrapper sheetsBackend;
 
     @InjectMocks
-    SheetsClient sheetsClient;
+    SheetsService sheetsService;
 
     @Test
     public void getDataset_should_trimTrailingNullsFromHeader_when_everyValueIsUnderAHeading() throws Exception {
@@ -36,7 +36,7 @@ public class SheetsClientTest {
         );
         when(sheetsBackend.fetchWorksheet("ss1", "ws1")).thenReturn(rawSheetsData);
 
-        Dataset dataset = sheetsClient.getDataset("ss1", "ws1");
+        Dataset dataset = sheetsService.getDataset("ss1", "ws1");
         Map<String, Object> schema = extractSchema(dataset);
         Assertions.assertThat(schema).containsOnlyKeys("title A1", "title B1");
     }
@@ -53,7 +53,7 @@ public class SheetsClientTest {
         );
         when(sheetsBackend.fetchWorksheet("ss1", "ws1")).thenReturn(rawSheetsData);
 
-        Dataset dataset = sheetsClient.getDataset("ss1", "ws1");
+        Dataset dataset = sheetsService.getDataset("ss1", "ws1");
         List<Map<String, Object>> objects = extractRows(dataset);
         Assertions.assertThat(objects).containsExactly(
                 Map.of(
@@ -74,7 +74,7 @@ public class SheetsClientTest {
         );
         when(sheetsBackend.fetchWorksheet("ss1", "ws1")).thenReturn(rawSheetsData);
 
-        Dataset dataset = sheetsClient.getDataset("ss1", "ws1");
+        Dataset dataset = sheetsService.getDataset("ss1", "ws1");
         Map<String, Object> schema = extractSchema(dataset);
         Assertions.assertThat(schema).containsOnlyKeys("title A1", "title B1", "Column C");
     }

@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SheetsClientFactory {
+public class SheetsServiceFactory {
 
     @Value("{spring.application.name}")
     private String appName;
@@ -20,12 +20,12 @@ public class SheetsClientFactory {
     @Autowired
     private NetHttpTransport httpTransport;
 
-    public SheetsClient createClient(String accessToken) {
+    public SheetsService create(String accessToken) {
         GoogleCredential credential = new GoogleCredential().setAccessToken(accessToken);
         Sheets service = new Sheets.Builder(httpTransport, jsonFactory, credential)
                 .setApplicationName(appName)
                 .build();
 
-        return new SheetsClient(new SheetsApiWrapper(service));
+        return new SheetsService(new SheetsClientWrapper(service));
     }
 }
