@@ -18,7 +18,7 @@ public class ServiceInfoE2eTest extends BaseE2eTest {
         .then()
             .log().ifValidationFails()
             .statusCode(200)
-            .body("description", equalTo("search-adapter-google-sheets.service-info.description"));
+            .body("description", equalTo("GA4GH Search/Dataset implementation backed by Google Sheets"));
         //@formatter:on
     }
 

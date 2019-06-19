@@ -11,7 +11,7 @@
     <groupId>com.dnastack.search.adapter</groupId>
     <artifactId>ga4gh-search-adapter-google-sheets</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>GA4GH Search Adapter: Google Sheets</name>
+    <name>ga4gh-search-adapter-google-sheets</name>
     <description>Implementation of the GA4GH Search/Datasets API backed by Google Sheets</description>
 
     <properties>

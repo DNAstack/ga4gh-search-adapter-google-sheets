@@ -46,7 +46,7 @@ image that runs the app.
 
 ### Docker
 1. `ci/build-docker-image ga4gh-search-adapter-google-sheets:dev ga4gh-search-adapter-google-sheets dev`
-1. `docker run -ti --rm -e ${see_below} -p 8087:8087 ga4gh-search-adapter-google-sheets:dev`
+1. `docker run -ti --rm -e SHEETS_AUTH_CLIENT_SECRET=your-secret -p 8087:8087 ga4gh-search-adapter-google-sheets:dev`
 
 ## Environment Variables
 All runtime configuration is passed into the app using environment variables.

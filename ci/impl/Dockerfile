@@ -42,5 +42,5 @@ ARG APP_NAME
 ARG APP_VERSION
 
 COPY --from=0 /build/target/${APP_NAME}*.jar /app.jar
-EXPOSE 8086
+EXPOSE 8087
 ENTRYPOINT ["java", "-jar", "app.jar"]
