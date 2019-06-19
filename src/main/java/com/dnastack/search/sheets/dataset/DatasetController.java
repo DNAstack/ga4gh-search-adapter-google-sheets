@@ -1,10 +1,10 @@
 package com.dnastack.search.sheets.dataset;
 
 import com.dnastack.search.sheets.client.SheetsServiceFactory;
+import com.dnastack.search.sheets.dataset.model.Dataset;
+import com.dnastack.search.sheets.dataset.model.ListDatasetsResponse;
 import com.dnastack.search.sheets.shared.BadRequestException;
 import lombok.extern.slf4j.Slf4j;
-import org.ga4gh.dataset.model.Dataset;
-import org.ga4gh.dataset.model.ListDatasetsResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,7 +22,6 @@ public class DatasetController {
 
     @GetMapping("/datasets")
     public ListDatasetsResponse list(@RequestHeader String authorization) {
-
         var datasets = sheetsServiceFactory.create(extractBearerToken(authorization)).getDatasets();
         return new ListDatasetsResponse(datasets);
     }

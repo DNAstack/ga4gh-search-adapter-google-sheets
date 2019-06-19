@@ -1,11 +1,8 @@
 package com.dnastack.search.sheets.client;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.dnastack.search.sheets.dataset.model.Dataset;
 import com.google.api.services.sheets.v4.model.CellData;
 import org.assertj.core.api.Assertions;
-import org.ga4gh.dataset.model.Dataset;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -15,7 +12,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.stream.Collectors.toList;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -37,7 +33,7 @@ public class SheetsServiceTest {
         when(sheetsBackend.fetchWorksheet("ss1", "ws1")).thenReturn(rawSheetsData);
 
         Dataset dataset = sheetsService.getDataset("ss1", "ws1");
-        Map<String, Object> schema = extractSchema(dataset);
+        Map<String, Object> schema = dataset.getSchema().getProperties();
         Assertions.assertThat(schema).containsOnlyKeys("title A1", "title B1");
     }
 
@@ -54,7 +50,7 @@ public class SheetsServiceTest {
         when(sheetsBackend.fetchWorksheet("ss1", "ws1")).thenReturn(rawSheetsData);
 
         Dataset dataset = sheetsService.getDataset("ss1", "ws1");
-        List<Map<String, Object>> objects = extractRows(dataset);
+        List<Map<String, Object>> objects = dataset.getObjects();
         Assertions.assertThat(objects).containsExactly(
                 Map.of(
                         "title A1", "value A2",
@@ -75,24 +71,26 @@ public class SheetsServiceTest {
         when(sheetsBackend.fetchWorksheet("ss1", "ws1")).thenReturn(rawSheetsData);
 
         Dataset dataset = sheetsService.getDataset("ss1", "ws1");
-        Map<String, Object> schema = extractSchema(dataset);
+        Map<String, Object> schema = dataset.getSchema().getProperties();
         Assertions.assertThat(schema).containsOnlyKeys("title A1", "title B1", "Column C");
     }
 
-    private static Map<String, Object> extractSchema(Dataset dataset) {
-        JsonNode schemaJson = dataset.getSchema().getSchemaJson();
-        return new ObjectMapper().convertValue(schemaJson, new TypeReference<Map<String, Object>>() {
-        });
-    }
+    @Test
+    public void getDataset_should_includeColumnPositionAttributeInSchema() throws Exception {
+        var rawSheetsData = List.of(
+                List.of(cd("title A1"), cd("title B1"))
+        );
+        when(sheetsBackend.fetchWorksheet("ss1", "ws1")).thenReturn(rawSheetsData);
 
-    @SuppressWarnings("unchecked")
-    private static List<Map<String, Object>> extractRows(Dataset dataset) {
-        return dataset.getObjects().stream()
-                .map(row -> (Map<String, Object>) row)
-                .collect(toList());
+        Dataset dataset = sheetsService.getDataset("ss1", "ws1");
+        Map<String, Object> schema = dataset.getSchema().getProperties();
+        Assertions.assertThat(schema).containsExactly(
+                Map.entry("title A1", Map.of("type", "string", "x-ga4gh-position", 0)),
+                Map.entry("title B1", Map.of("type", "string", "x-ga4gh-position", 1)));
     }
 
     private static CellData cd(Object value) {
         return new CellData().setFormattedValue(value == null ? null : String.valueOf(value));
     }
+
 }

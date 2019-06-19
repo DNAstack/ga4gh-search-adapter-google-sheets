@@ -1,12 +1,12 @@
 package com.dnastack.search.sheets.client;
 
+import com.dnastack.search.sheets.dataset.model.Dataset;
+import com.dnastack.search.sheets.dataset.model.DatasetInfo;
+import com.dnastack.search.sheets.dataset.model.Pagination;
+import com.dnastack.search.sheets.dataset.model.Schema;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.services.sheets.v4.model.CellData;
 import lombok.extern.slf4j.Slf4j;
-import org.ga4gh.dataset.model.Dataset;
-import org.ga4gh.dataset.model.DatasetInfo;
-import org.ga4gh.dataset.model.Pagination;
-import org.ga4gh.dataset.model.Schema;
 
 import java.io.IOException;
 import java.net.URI;
@@ -29,6 +29,7 @@ public class SheetsService {
     }
 
     public List<DatasetInfo> getDatasets() {
+        // TODO request drive listing scope and list all spreadsheets visible to requesting user
         return Collections.emptyList();
     }
 
@@ -54,6 +55,7 @@ public class SheetsService {
         for (int colNum = 0; colNum < sizeOfLongestRow; colNum++) {
             Map<String, Object> props = new LinkedHashMap<>();
             props.put("type", "string");
+            props.put("x-ga4gh-position", colNum);
 
             String colName = colNum < headerRow.size() ? headerRow.get(colNum) : null;
             if (colName == null || colName.trim().length() == 0) {
@@ -66,10 +68,10 @@ public class SheetsService {
             schemaJson.put(colName, props);
         }
         log.debug("Extracted {} actual column headings and {} generated values", actualHeadingCount, generatedHeadingCount);
-        var schema = new Schema(URI.create("https://todo.example.com"), objectMapper.valueToTree(schemaJson));
+        var schema = new Schema(URI.create("https://todo.example.com"), "Generated from header row of spreadsheet", schemaJson);
 
         // assemble row data
-        List<Object> objects = new ArrayList<>(); // TODO Dataset type is too opaque here. Should be List<Map<String, Object>>.
+        List<Map<String, Object>> objects = new ArrayList<>();
         for (int i = headerSize; i < stringRows.size(); i++) {
             List<String> row = stringRows.get(i);
 
@@ -88,7 +90,7 @@ public class SheetsService {
         }
 
         // assemble dataset
-        return new Dataset(schema, objects, new Pagination(null, null));
+        return new Dataset(schema, objects, Pagination.ONLY_PAGE);
     }
 
     private static List<List<String>> convertWorksheetToStringValues(List<List<CellData>> cellDataRows) {
