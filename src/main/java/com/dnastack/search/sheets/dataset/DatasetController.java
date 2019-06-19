@@ -33,6 +33,10 @@ public class DatasetController {
         return sheetsClient.getDataset(spreadsheetId, sheetTitle);
     }
 
+    @GetMapping("/example")
+    public String deleteme() {
+        return "Hello world";
+    }
 
     private String extractBearerToken(String authorization) {
         String[] parts = authorization.split(" ");
