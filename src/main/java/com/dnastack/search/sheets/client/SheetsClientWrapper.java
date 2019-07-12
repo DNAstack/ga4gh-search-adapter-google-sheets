@@ -57,6 +57,7 @@ class SheetsClientWrapper {
 
         return dataRanges.get(0).getRowData().stream()
                 .map(RowData::getValues)
+                .map(values -> values == null ? List.<CellData>of() : values)
                 .collect(toList());
     }
 }

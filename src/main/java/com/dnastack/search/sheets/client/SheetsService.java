@@ -4,7 +4,6 @@ import com.dnastack.search.sheets.dataset.model.Dataset;
 import com.dnastack.search.sheets.dataset.model.DatasetInfo;
 import com.dnastack.search.sheets.dataset.model.Pagination;
 import com.dnastack.search.sheets.dataset.model.Schema;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.services.sheets.v4.model.CellData;
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,7 +20,6 @@ import static java.util.stream.Collectors.toList;
 @Slf4j
 public class SheetsService {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
     private final SheetsClientWrapper sheets;
 
     public SheetsService(SheetsClientWrapper sheets) {
