@@ -14,7 +14,7 @@ sheets:
   auth:
     client-id: 217706947495-1cneo4b771r1365tsome1j0ok4gh8agg.apps.googleusercontent.com
     client-secret: get-this-from-gcloud-console
-    scopes: https://www.googleapis.com/auth/spreadsheets.readonly
+    scopes: https://www.googleapis.com/auth/spreadsheets.readonly,https://www.googleapis.com/auth/drive.metadata.readonly
 
 spring:
   jackson:

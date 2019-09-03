@@ -2,11 +2,10 @@ package com.dnastack.search.sheets.client;
 
 import com.dnastack.search.sheets.shared.NotFoundException;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
+import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.model.FileList;
 import com.google.api.services.sheets.v4.Sheets;
-import com.google.api.services.sheets.v4.model.CellData;
-import com.google.api.services.sheets.v4.model.GridData;
-import com.google.api.services.sheets.v4.model.RowData;
-import com.google.api.services.sheets.v4.model.Spreadsheet;
+import com.google.api.services.sheets.v4.model.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -20,17 +19,43 @@ import static java.util.stream.Collectors.toList;
 @Slf4j
 class SheetsClientWrapper {
 
-    private final Sheets service;
+    private final Drive driveService;
+    private final Sheets sheetsService;
 
-    public SheetsClientWrapper(Sheets service) {
-        this.service = service;
+    public SheetsClientWrapper(Drive driveService, Sheets sheetsService) {
+        this.driveService = driveService;
+        this.sheetsService = sheetsService;
+    }
+
+    List<SheetInfo> fetchSheetList() throws IOException {
+        // drive.files.list({
+        //    q: "mimeType='application/vnd.google-apps.spreadsheet'",
+        //    fields: 'nextPageToken, files(id, name)'
+        //}
+        FileList fileList = driveService.files().list()
+                .setQ("mimeType='application/vnd.google-apps.spreadsheet'")
+                .execute();
+
+        return fileList.getFiles().stream()
+                .map(file -> new SheetInfo(file.getId(), file.getName(), fetchWorksheetNames(file.getId())))
+                .collect(toList());
+    }
+
+    private List<String> fetchWorksheetNames(String spreadsheetId) {
+        Spreadsheet spreadsheet = null;
+        try {
+            spreadsheet = sheetsService.spreadsheets().get(spreadsheetId).setIncludeGridData(false).execute();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return spreadsheet.getSheets().stream().map(sheet -> sheet.getProperties().getTitle()).collect(toList());
     }
 
     List<List<CellData>> fetchWorksheet(String spreadsheetId, String worksheetTitle) throws GoogleJsonResponseException, NotFoundException {
 
         Spreadsheet spreadsheet;
         try {
-            spreadsheet = service.spreadsheets().get(spreadsheetId).setIncludeGridData(true).execute();
+            spreadsheet = sheetsService.spreadsheets().get(spreadsheetId).setIncludeGridData(true).execute();
         } catch (GoogleJsonResponseException e) {
             throw e;
         } catch (IOException e) {

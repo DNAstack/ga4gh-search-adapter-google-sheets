@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Value;
 
 import java.net.URI;
+import java.util.Map;
 
 /** Basic information about a dataset. Appears in listings of datasets. */
 @Value
@@ -14,12 +15,6 @@ public class DatasetInfo {
      * location
      */
     private String id;
-
     private String description;
-
-    @JsonProperty("schema-id")
-    private String schemaId;
-
-    @JsonProperty("schema-location")
-    private URI schemaLocation;
+    private Map<String, Object> schema;
 }

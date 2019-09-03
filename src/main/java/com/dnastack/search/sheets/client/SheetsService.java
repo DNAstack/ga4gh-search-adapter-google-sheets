@@ -26,9 +26,17 @@ public class SheetsService {
         this.sheets = sheets;
     }
 
-    public List<DatasetInfo> getDatasets() {
-        // TODO request drive listing scope and list all spreadsheets visible to requesting user
-        return Collections.emptyList();
+    public List<DatasetInfo> getDatasets() throws IOException {
+        return sheets.fetchSheetList().stream()
+                .flatMap(sheetInfo ->
+                    sheetInfo.getWorksheetTitles().stream().map(worksheetTitle ->
+                        new DatasetInfo(
+                                sheetInfo.getId() + ":" + worksheetTitle,
+                                sheetInfo.getDescription() + " - " + worksheetTitle,
+                                Map.of("$ref", "dataset/" + sheetInfo.getId() + ":" + worksheetTitle + "#schema"))
+                    )
+                )
+                .collect(toList());
     }
 
     public Dataset getDataset(String spreadsheetId, String worksheetName) throws IOException {

@@ -3,6 +3,7 @@ package com.dnastack.search.sheets.client;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
+import com.google.api.services.drive.Drive;
 import com.google.api.services.sheets.v4.Sheets;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,10 +23,13 @@ public class SheetsServiceFactory {
 
     public SheetsService create(String accessToken) {
         GoogleCredential credential = new GoogleCredential().setAccessToken(accessToken);
-        Sheets service = new Sheets.Builder(httpTransport, jsonFactory, credential)
+        Drive driveService = new Drive.Builder(httpTransport, jsonFactory, credential)
+                .setApplicationName(appName)
+                .build();
+        Sheets sheetsService = new Sheets.Builder(httpTransport, jsonFactory, credential)
                 .setApplicationName(appName)
                 .build();
 
-        return new SheetsService(new SheetsClientWrapper(service));
+        return new SheetsService(new SheetsClientWrapper(driveService, sheetsService));
     }
 }

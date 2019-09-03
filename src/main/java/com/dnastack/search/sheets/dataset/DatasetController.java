@@ -21,7 +21,7 @@ public class DatasetController {
     private SheetsServiceFactory sheetsServiceFactory;
 
     @GetMapping("/datasets")
-    public ListDatasetsResponse list(@RequestHeader String authorization) {
+    public ListDatasetsResponse list(@RequestHeader String authorization) throws IOException {
         var datasets = sheetsServiceFactory.create(extractBearerToken(authorization)).getDatasets();
         return new ListDatasetsResponse(datasets);
     }
@@ -31,11 +31,6 @@ public class DatasetController {
         log.info("Fetching {} - {}", spreadsheetId, sheetTitle);
         var sheetsClient = sheetsServiceFactory.create(extractBearerToken(authorization));
         return sheetsClient.getDataset(spreadsheetId, sheetTitle);
-    }
-
-    @GetMapping("/example")
-    public String deleteme() {
-        return "Hello world";
     }
 
     private String extractBearerToken(String authorization) {
@@ -48,5 +43,4 @@ public class DatasetController {
         }
         return parts[1];
     }
-
 }
