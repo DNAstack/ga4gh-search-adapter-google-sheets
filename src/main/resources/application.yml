@@ -16,6 +16,7 @@ sheets:
     client-secret: get-this-from-gcloud-console
     scopes: https://www.googleapis.com/auth/spreadsheets.readonly,https://www.googleapis.com/auth/drive.metadata.readonly
 
+
 spring:
   jackson:
     default-property-inclusion: non_empty
@@ -26,3 +27,7 @@ logging:
       dnastack:
         search:
           sheets: DEBUG
+info:
+  build:
+    name: ga4gh-search-adapter-google-sheets
+    version: 1.0-SNAPSHOT

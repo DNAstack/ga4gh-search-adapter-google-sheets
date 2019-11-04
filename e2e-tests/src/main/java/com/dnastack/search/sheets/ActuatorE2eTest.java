@@ -13,7 +13,7 @@ public class ActuatorE2eTest extends BaseE2eTest {
 
     @Test
     public void appNameAndVersionShouldBeExposed() {
-        Assume.assumeFalse("Service info isn't set on local dev builds", RestAssured.baseURI.startsWith("http://localhost:"));
+//        Assume.assumeFalse("Service info isn't set on local dev builds", RestAssured.baseURI.startsWith("http://localhost:"));
         //@formatter:off
         given()
             .log().method()
