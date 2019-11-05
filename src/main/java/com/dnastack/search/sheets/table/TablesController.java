@@ -25,25 +25,25 @@ public class TablesController {
     @Autowired
     private SheetsServiceFactory sheetsServiceFactory;
 
-    @RequestMapping(value = "/api/tables", method = RequestMethod.GET)
+    @RequestMapping(value = "/tables", method = RequestMethod.GET)
     public ListTableResponse getTables(@RequestHeader String authorization, @RequestParam(value = "pageSize", required = false) Integer pageSize, @RequestParam(value = "nextPageToken", required = false) String nextPageToken) throws IOException {
         return sheetsServiceFactory.create(extractBearerToken(authorization)).getTables(pageSize, nextPageToken);
     }
 
 
-    @RequestMapping(value = "/api/table/{sheetId}:{sheetTitle}/info", method = RequestMethod.GET)
+    @RequestMapping(value = "/table/{sheetId}:{sheetTitle}/info", method = RequestMethod.GET)
     public Table getTableInfo(@RequestHeader String authorization, @PathVariable("sheetId") String sheetId, @PathVariable("sheetTitle") String sheetTitle) throws IOException {
         return sheetsServiceFactory.create(extractBearerToken(authorization)).getTable(sheetId, sheetTitle);
     }
 
 
-    @RequestMapping(value = "/api/table/{sheetId}:{sheetTitle}/data", method = RequestMethod.GET)
+    @RequestMapping(value = "/table/{sheetId}:{sheetTitle}/data", method = RequestMethod.GET)
     public TableData getTableData(@RequestHeader String authorization, @PathVariable("sheetId") String sheetId, @PathVariable("sheetTitle") String sheetTitle, @RequestParam(value = "headerRow", required = false) Integer headerRow) throws IOException {
         return sheetsServiceFactory.create(extractBearerToken(authorization))
             .getTableData(sheetId, sheetTitle, headerRow);
     }
 
-    @RequestMapping(value = "/api/table/{sheetId}:{sheetTitle}/data-model", method = RequestMethod.GET)
+    @RequestMapping(value = "/table/{sheetId}:{sheetTitle}/data-model", method = RequestMethod.GET)
     public DataModel getDataModel(@RequestHeader String authorization, @PathVariable("sheetId") String sheetId, @PathVariable("sheetTitle") String sheetTitle, @RequestParam(value = "headerRow", required = false) Integer headerRow) throws IOException {
         return sheetsServiceFactory.create(extractBearerToken(authorization))
             .getDataModel(sheetId, sheetTitle, headerRow);

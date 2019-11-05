@@ -14,7 +14,7 @@ public class ServiceInfoE2eTest extends BaseE2eTest {
             .log().method()
             .log().uri()
         .when()
-            .get("/ga4gh/search/v1/service-info")
+            .get("/service-info")
         .then()
             .log().ifValidationFails()
             .statusCode(200)

@@ -17,7 +17,7 @@ public class ServiceInfoController {
     @Value("${ga4gh.service-info.description}")
     private String serviceDescription;
 
-    @GetMapping({"/ga4gh/search/v1/service-info", "/"})
+    @GetMapping({"/service-info", "/"})
     public ServiceInfoResponse getServiceInfo() {
         return new ServiceInfoResponse(
                 SEARCH_VERSION,
