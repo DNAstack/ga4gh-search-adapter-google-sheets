@@ -11,6 +11,9 @@ ARG APP_NAME
 ARG APP_VERSION
 WORKDIR /build
 
+# Don't list files as they are downloaded
+ENV MAVEN_OPTS "-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn"
+
 # Before bringing in project sources, resolve maven dependencies.
 # This allows Docker to reuse the cached image with all dependencies resolved.
 ADD target/pom.xml ./
@@ -33,10 +36,13 @@ FROM openjdk:11-slim
 ARG APP_NAME
 ARG APP_VERSION
 
+# Don't list files as they are downloaded
+ENV MAVEN_OPTS "-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn"
+
 ADD target/e2e-exec-pom.xml /pom.xml
 ADD target/.mvn /.mvn
 ADD target/mvnw /
 COPY --from=0 /build/target/${APP_NAME}*.jar /e2e-tests.jar
 RUN ./mvnw -B de.qaware.maven:go-offline-maven-plugin:resolve-dependencies
 
-ENTRYPOINT ["./mvnw", "-o", "test"]
+ENTRYPOINT ["./mvnw", "-B", "-o", "test"]
