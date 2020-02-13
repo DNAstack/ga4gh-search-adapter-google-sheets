@@ -17,6 +17,7 @@ import com.google.auth.oauth2.ServiceAccountCredentials;
 import java.io.ByteArrayInputStream;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
+import java.util.Base64;
 import java.util.List;
 import java.util.Set;
 import org.junit.BeforeClass;
@@ -31,7 +32,7 @@ public class TableE2eTest extends BaseE2eTest {
         try {
             credential =
                 ServiceAccountCredentials
-                    .fromStream(new ByteArrayInputStream(requiredEnv("E2E_GOOGLE_CREDENTIALS_JSON_BASE64").getBytes()))
+                    .fromStream(new ByteArrayInputStream(Base64.getDecoder().decode(requiredEnv("E2E_GOOGLE_CREDENTIALS_JSON_BASE64"))))
                     .createScoped(List
                         .of("https://www.googleapis.com/auth/spreadsheets.readonly", "https://www.googleapis.com/auth/drive.metadata.readonly"));
             credential.refresh();
@@ -90,7 +91,7 @@ public class TableE2eTest extends BaseE2eTest {
             .statusCode(200)
             .body("name",equalTo("17LzrJJXKraCCsfCZJ1FqCsMAAoYTcntkpS5gSvOsx1w:Fruits"))
             .body("description",equalTo("Fruits and Vegetables - Fruits"))
-            .body("data_model",hasEntry("$ref","table/17LzrJJXKraCCsfCZJ1FqCsMAAoYTcntkpS5gSvOsx1w:Fruits/data-model"));
+            .body("data_model",hasEntry("$ref","data-model"));
         //@formatter:on
     }
 
