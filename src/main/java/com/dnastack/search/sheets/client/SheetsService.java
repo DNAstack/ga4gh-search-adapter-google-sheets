@@ -11,15 +11,16 @@ import com.dnastack.search.sheets.table.model.TableData;
 import com.google.api.services.sheets.v4.model.CellData;
 import java.io.IOException;
 import java.net.URI;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 
 /**
@@ -51,9 +52,9 @@ public class SheetsService {
             .flatMap(sheetInfo ->
                 sheetInfo.getWorksheetTitles().stream().map(worksheetTitle ->
                     new Table(
-                        sheetInfo.getId() + ":" + worksheetTitle,
+                        getIdString(sheetInfo.getId(), worksheetTitle),
                         sheetInfo.getDescription() + " - " + worksheetTitle,
-                        Map.of("$ref", "table/" +getIdString(sheetInfo.getId(),worksheetTitle)+"/data-model"))
+                        Map.of("$ref", "table/" + getIdString(sheetInfo.getId(), worksheetTitle) + "/data-model"))
                 )
             )
             .collect(toList());
@@ -73,8 +74,13 @@ public class SheetsService {
         return sheetId + ":" + URLEncoder.encode(worksheetTitle, Charset.defaultCharset());
     }
 
-    public DataModel getDataModel(String sheetId, String worksheetName, Integer headerRow) throws IOException {
 
+    private String decodeWorksheetName(String worksheetName) {
+        return URLDecoder.decode(worksheetName, StandardCharsets.UTF_8);
+    }
+
+    public DataModel getDataModel(String sheetId, String worksheetName, Integer headerRow) throws IOException {
+        worksheetName = decodeWorksheetName(worksheetName);
         List<List<String>> sheetData = getSheetData(sheetId, worksheetName);
         if (headerRow == null) {
             headerRow = DEFAULT_HEADER_ROW;
@@ -120,12 +126,12 @@ public class SheetsService {
     }
 
     public Table getTable(String spreadsheetId, String worksheetName) throws IOException {
+        worksheetName = decodeWorksheetName(worksheetName);
         SheetInfo sheetInfo = sheets.fetchWorksheetInfo(spreadsheetId);
         return new Table(
             spreadsheetId + ":" + worksheetName,
             sheetInfo.getDescription() + " - " + worksheetName,
-            Map.of("$ref", "table/" + sheetInfo.getId() + ":" + URLEncoder
-                .encode(worksheetName, Charset.defaultCharset()) + "/data-model"));
+            Map.of("$ref", "data-model"));
     }
 
     public TableData getTableData(String spreadsheetId, String worksheetName, Integer headerRow) throws IOException {
@@ -134,7 +140,7 @@ public class SheetsService {
         if (headerRow == null) {
             headerRow = DEFAULT_HEADER_ROW;
         }
-
+        worksheetName = decodeWorksheetName(worksheetName);
         List<List<String>> sheetData = getSheetData(spreadsheetId, worksheetName);
 
         if (sheetData.size() < headerRow) {

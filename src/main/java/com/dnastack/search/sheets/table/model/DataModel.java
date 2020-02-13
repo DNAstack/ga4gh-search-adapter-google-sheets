@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class DataModel {
 
-    public static final String DEFAULT_SCHEMA_ID = "GENERATED_SCHEMA";
+    public static final String DEFAULT_DATA_MODEL_ID = "GENERATED_DATA_MODEL";
     public static final String DEFAULT_DESCRIPTION = "Generated from header row of spreadsheet";
     public static final String DEFAULT_JSON_SCHEMA_REFERENCE = "http://json-schema.org/draft-07/schema#";
 
@@ -40,7 +40,7 @@ public class DataModel {
 
     public static DataModel fromProperties(Map<String, Object> properties) {
         DataModel model = new DataModel();
-        model.setId(DEFAULT_SCHEMA_ID);
+        model.setId(DEFAULT_DATA_MODEL_ID);
         model.setDescription(DEFAULT_DESCRIPTION);
         model.setSchema(DEFAULT_JSON_SCHEMA_REFERENCE);
         model.setProperties(properties);
