@@ -21,17 +21,17 @@ public class OAuthE2eTest extends BaseE2eTest {
     public void oauthTokenEndpointShouldRedirectToValidGoogleSignInPage() throws Exception {
 
         //@formatter:off
-        Response response = given()
+        given()
             .log().method()
             .log().uri()
             .redirects().follow(true)
-        .when()
-            .get("/oauth/token");
+        .get("/oauth/token")
+            .then()
+            .log().all()
+            .assertThat()
+            .statusCode(200)
+            .contentType("text/html");
         //@formatter:on
 
-        assertThat(response.getStatusCode(), is(200));
-        assertThat(response.getContentType(), startsWith("text/html"));
-        String googleLoginPageHtml = response.asString();
-        assertThat(googleLoginPageHtml, containsString("Email or phone"));
     }
 }
