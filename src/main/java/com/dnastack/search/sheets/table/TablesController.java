@@ -27,24 +27,28 @@ public class TablesController {
 
     @RequestMapping(value = "/tables", method = RequestMethod.GET)
     public ListTableResponse getTables(@RequestHeader String authorization, @RequestParam(value = "pageSize", required = false) Integer pageSize, @RequestParam(value = "nextPageToken", required = false) String nextPageToken) throws IOException {
+        log.info("Getting table list with pageSize={} nextPageToken={}", pageSize, nextPageToken);
         return sheetsServiceFactory.create(extractBearerToken(authorization)).getTables(pageSize, nextPageToken);
     }
 
 
     @RequestMapping(value = "/table/{sheetId}:{sheetTitle}/info", method = RequestMethod.GET)
     public Table getTableInfo(@RequestHeader String authorization, @PathVariable("sheetId") String sheetId, @PathVariable("sheetTitle") String sheetTitle) throws IOException {
+        log.info("Getting info for id={} title={}", sheetId, sheetTitle);
         return sheetsServiceFactory.create(extractBearerToken(authorization)).getTable(sheetId, sheetTitle);
     }
 
 
     @RequestMapping(value = "/table/{sheetId}:{sheetTitle}/data", method = RequestMethod.GET)
     public TableData getTableData(@RequestHeader String authorization, @PathVariable("sheetId") String sheetId, @PathVariable("sheetTitle") String sheetTitle, @RequestParam(value = "headerRow", required = false) Integer headerRow) throws IOException {
+        log.info("Getting data for id={} title={}, headerRow={}", sheetId, sheetTitle, headerRow);
         return sheetsServiceFactory.create(extractBearerToken(authorization))
             .getTableData(sheetId, sheetTitle, headerRow);
     }
 
     @RequestMapping(value = "/table/{sheetId}:{sheetTitle}/data-model", method = RequestMethod.GET)
     public DataModel getDataModel(@RequestHeader String authorization, @PathVariable("sheetId") String sheetId, @PathVariable("sheetTitle") String sheetTitle, @RequestParam(value = "headerRow", required = false) Integer headerRow) throws IOException {
+        log.info("Getting data model for id={} title={}, headerRow={}", sheetId, sheetTitle, headerRow);
         return sheetsServiceFactory.create(extractBearerToken(authorization))
             .getDataModel(sheetId, sheetTitle, headerRow);
     }
