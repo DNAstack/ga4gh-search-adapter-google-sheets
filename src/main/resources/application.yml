@@ -19,7 +19,7 @@ sheets:
 
 spring:
   jackson:
-    default-property-inclusion: non_empty
+    default-property-inclusion: always
     property-naming-strategy: SNAKE_CASE
 logging:
   level:
