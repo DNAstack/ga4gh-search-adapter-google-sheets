@@ -5,7 +5,9 @@ import static java.util.stream.Collectors.toList;
 import com.dnastack.search.sheets.shared.NotFoundException;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.drive.Drive;
+import com.google.api.services.drive.model.DriveList;
 import com.google.api.services.drive.model.FileList;
+import com.google.api.services.drive.model.TeamDriveList;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.CellData;
 import com.google.api.services.sheets.v4.model.GridData;
@@ -34,6 +36,8 @@ class SheetsClientWrapper {
         FileList fileList = driveService.files().list()
             .setQ("mimeType='application/vnd.google-apps.spreadsheet'")
             .setPageSize(pageSize)
+            .setSupportsAllDrives(true)
+            .setIncludeItemsFromAllDrives(true)
             .execute();
 
         return extractSheetInfoFromFileList(fileList);
