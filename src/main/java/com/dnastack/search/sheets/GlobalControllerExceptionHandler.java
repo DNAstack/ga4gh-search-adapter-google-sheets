@@ -35,7 +35,14 @@ public class GlobalControllerExceptionHandler {
     @ExceptionHandler(GoogleJsonResponseException.class)
     public ResponseEntity<SearchErrorResponse> handle(GoogleJsonResponseException ex) {
         log.info("Returning " + ex.getStatusCode(), ex);
-        return ResponseEntity.status(ex.getStatusCode()).body(new SearchErrorResponse(ex.getDetails().getMessage()));
+        // TODO: Clean this tomorrow
+        ResponseEntity resp = ResponseEntity.status(ex.getStatusCode())
+            .body(new SearchErrorResponse(ex.getDetails().getMessage()));
+        if (ex.getStatusCode() == 401) {
+            resp = ResponseEntity.status(ex.getStatusCode()).header("www-authenticate", "[Bearer realm=\"https://accounts.google.com/\", error=invalid_token]")
+                .body(new SearchErrorResponse(ex.getDetails().getMessage()));
+        }
+        return resp;
     }
 
 }
