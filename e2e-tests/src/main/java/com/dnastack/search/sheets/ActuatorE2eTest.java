@@ -29,6 +29,19 @@ public class ActuatorE2eTest extends BaseE2eTest {
     }
 
     @Test
+    public void appHealthStatusShouldBeExposed() {
+        given()
+            .log().method()
+            .log().uri()
+            .when()
+            .get("/actuator/health")
+            .then()
+            .log().ifValidationFails()
+            .statusCode(200)
+            .body("status", equalTo("UP"));
+    }
+
+    @Test
     public void sensitiveInfoShouldNotBeExposed() {
         //@formatter:off
         Stream.of("auditevents", "beans", "conditions", "configprops", "env", "flyway", "httptrace", "logfile", "loggers",
