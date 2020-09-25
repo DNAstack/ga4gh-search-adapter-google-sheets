@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.util.List;
+
 @Slf4j
 @ControllerAdvice
 public class GlobalControllerExceptionHandler {
@@ -35,14 +37,12 @@ public class GlobalControllerExceptionHandler {
     @ExceptionHandler(GoogleJsonResponseException.class)
     public ResponseEntity<SearchErrorResponse> handle(GoogleJsonResponseException ex) {
         log.info("Returning " + ex.getStatusCode(), ex);
-        // TODO: Clean this tomorrow
-        ResponseEntity resp = ResponseEntity.status(ex.getStatusCode())
-            .body(new SearchErrorResponse(ex.getDetails().getMessage()));
         if (ex.getStatusCode() == 401) {
-            resp = ResponseEntity.status(ex.getStatusCode()).header("www-authenticate", "[Bearer realm=\"https://accounts.google.com/\", error=invalid_token]")
+            return ResponseEntity.status(ex.getStatusCode())
+                .header("www-authenticate", ex.getHeaders().getAuthenticate())
                 .body(new SearchErrorResponse(ex.getDetails().getMessage()));
         }
-        return resp;
+        return ResponseEntity.status(ex.getStatusCode()).body(new SearchErrorResponse(ex.getDetails().getMessage()));
     }
 
 }
