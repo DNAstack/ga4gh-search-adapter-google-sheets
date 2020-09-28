@@ -34,8 +34,7 @@ public class UnauthorizedRespE2eTest extends BaseE2eTest {
         .when()
             .get(endpoint)
         .then()
-            .statusCode(400)
-            .body("message", equalTo("Missing request header 'authorization' for method parameter of type String"));
+            .statusCode(400);
     }
 
     private void getWithInvalidTokenAndCheckFor401(String endpoint) {
