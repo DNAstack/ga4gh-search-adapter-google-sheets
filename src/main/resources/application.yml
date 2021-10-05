@@ -27,6 +27,13 @@ logging:
       dnastack:
         search:
           sheets: DEBUG
+
+management:
+  endpoints:
+    # Expose only needed endpoints and make sure that sensitive endpoints are protected by Spring Security!
+    # Our E2E tests test that "info" and "health" endpoints are publicly exposed while "loggers" endpoint is protected.
+    web.exposure.include: info, health, prometheus
+    
 info:
   build:
     name: ga4gh-search-adapter-google-sheets
