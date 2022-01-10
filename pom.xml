@@ -17,6 +17,9 @@
     <properties>
         <java.version>11</java.version>
         <org.jdbi.version>3.6.0</org.jdbi.version>
+        <oauth-client-factory.version>0.1.0</oauth-client-factory.version>
+        <logback-extensions.version>1.0.0</logback-extensions.version>
+        <logback.contrib.version>0.1.5</logback.contrib.version>
     </properties>
 
     <dependencies>
@@ -65,6 +68,18 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+
+        <!-- Parseable Stackdriver Logs -->
+        <dependency>
+            <groupId>com.dnastack</groupId>
+            <artifactId>logback-extensions</artifactId>
+            <version>${logback-extensions.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback.contrib</groupId>
+            <artifactId>logback-jackson</artifactId>
+            <version>${logback.contrib.version}</version>
         </dependency>
     </dependencies>
 
