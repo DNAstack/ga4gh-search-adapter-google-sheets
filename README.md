@@ -5,8 +5,7 @@ This project is a stateless service that responds to
 requests by fetching data from Google Sheets via the Google Sheets API. With this service
 in place, any Dataset API Client can pull data from Google Sheets worksheets.
 
-This is a work in progress. It's being worked on alongside an evolving specification,
-and it will not always correspond 1:1 with that spec.
+
 
 # Quick Start
 
