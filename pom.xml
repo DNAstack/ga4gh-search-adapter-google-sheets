@@ -18,7 +18,7 @@
         <java.version>11</java.version>
         <org.jdbi.version>3.6.0</org.jdbi.version>
         <oauth-client-factory.version>0.1.0</oauth-client-factory.version>
-        <logback-extensions.version>1.0.0</logback-extensions.version>
+        <logback-extensions.version>1.0.1</logback-extensions.version>
         <logback.contrib.version>0.1.5</logback.contrib.version>
     </properties>
 
